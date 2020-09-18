@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/renant/my-hero-api/models"
 
@@ -68,7 +69,7 @@ func (cc *CharacterController) GetCharacters(c *fiber.Ctx) error {
 		var character models.Character
 		err := value.DataTo(&character)
 		if err != nil {
-			continue
+			fmt.Println(err.Error())
 		}
 		sliceCharacters = append(sliceCharacters, character)
 	}
