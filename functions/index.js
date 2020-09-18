@@ -77,12 +77,12 @@ exports.getCharacters = functions
 const fetchCharactersTopic = 'fetch-characters-topic';
 exports.getCharacter = functions
   .runWith({ memory: '1GB' })
-  .https.onRequest(async (request, response) => {
-    //.pubsub.topic(fetchCharactersTopic)
-    //.onPublish(async (msg) => {
+  // .https.onRequest(async (request, response) => {
+  .pubsub.topic(fetchCharactersTopic)
+  .onPublish(async (msg) => {
     try {
-      //const { id } = msg.json
-      const { id } = request.query;
+      const { id } = msg.json
+      // const { id } = request.query;
       const characterRef = await db.collection("characters").doc(id).get();
 
       const character = characterRef.data();
@@ -184,7 +184,7 @@ exports.getCharacter = functions
       var docRef = db.collection("characters").doc(id);
 
       docRef.update(character);
-      response.status(200).json(character);
+      // response.status(200).json(character);
     } catch (error) {
       console.error(error)
     }
