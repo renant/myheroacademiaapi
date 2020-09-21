@@ -52,9 +52,9 @@ exports.getCharacters = functions
       const pathTmp = path.join(os.tmpdir(), referenceCode)
 
       download(image, pathTmp).then(() => {
-        storageRef.bucket('my-hero-academia-api').upload(pathTmp), {
+        storageRef.bucket('my-hero-academia-api').upload(pathTmp, {
           destination: referenceCode
-        }
+        })
         return;
       }).catch(err => {
         console.error(err);
@@ -189,28 +189,31 @@ exports.getCharacter = functions
           if (!findImage.includes('/wiki/')) {
 
             const referenceCode = `${id}-${index + 1}.jpg`;
-            const pathImg = path.join(os.tmpdir(), referenceCode)
 
 
-            download(findImage, pathImg).then(() => {
-              storageRef.bucket('my-hero-academia-api').upload(pathImg), {
-                destination: referenceCode
-              }
-              return;
-            }).catch(err => {
-              console.error(err);
+
+            charactersImages.push({
+              referenceCode: referenceCode,
+              findImage: findImage
             });
-
-            charactersImages.push(referenceCode);
           }
         })
       })
+
+      const downloadPromises = charactersImages.map(async (e) => {
+        const pathImg = path.join(os.tmpdir(), e.referenceCode)
+        await download(e.findImage, pathImg)
+        const response = await storageRef.bucket('my-hero-academia-api').upload(pathImg, { destination: e.referenceCode })
+      })
+
+      await Promise.all(downloadPromises);
+
 
       character.description = ($('nav').prevAll('p').map((_, description) => {
         return $(description).contents().text().replace(/\[.*?\]/, '')
       }).toArray().reverse().join(''));
 
-      const uniqueImages = new Set(charactersImages.concat(character.images))
+      const uniqueImages = new Set(charactersImages.map(image => image.referenceCode).concat(character.images))
       character.images = [...uniqueImages]
 
       var docRef = db.collection("characters").doc(id);
@@ -235,7 +238,7 @@ async function download(url, dest) {
     })
       .pipe(file)
       .on('finish', async () => {
-        console.log(`The file is finished downloading.`);
+        console.log('download finished');
         resolve();
       })
       .on('error', (error) => {
