@@ -28,8 +28,8 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
-	app.Get("/character/:characterId", characterController.GetCharactersById)
-	app.Get("/character", characterController.GetCharacters)
+	app.Get("/api/character/:characterId", characterController.GetCharactersById)
+	app.Get("/api/character", characterController.GetCharacters)
 
 	app.Listen(":3000")
 }
