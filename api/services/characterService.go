@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+	"strconv"
 	"strings"
 
 	"github.com/renant/my-hero-api/models"
@@ -8,7 +10,7 @@ import (
 )
 
 type ICharacterService interface {
-	GetAll(params map[string]interface{}) (models.PaginationResult, error)
+	GetAll(params map[string]interface{}) (*models.PaginationResult, error)
 }
 
 type CharacterService struct {
@@ -21,24 +23,26 @@ func NewCharacterService(characterResponseRepository repositories.CharacterRepos
 	}
 }
 
-func (s *CharacterService) GetAll(params map[string]interface{}) (models.PaginationResult, error) {
+func (s *CharacterService) GetAll(params map[string]interface{}) (*models.PaginationResult, error) {
 
 	sliceCharacters, err := s.CharacterRepository.GetAll()
+	pageSize := 20
+	page := 1
 
 	if err != nil {
-		return models.PaginationResult{
-			Result: nil,
-		}, err
+		return nil, err
 	}
 
 	if params == nil {
-		return models.PaginationResult{
-			Result: sliceCharacters,
-			Info: models.Info{
-				Count: 1,
-				Pages: 2,
-			},
-		}, nil
+		return paginateCharacters(sliceCharacters, page, pageSize), nil
+	}
+
+	if pageParam, ok := params["page"]; ok {
+		x, err := strconv.Atoi(pageParam.(string))
+		if err != nil {
+			return nil, errors.New("Page must by a integer")
+		}
+		page = x
 	}
 
 	if name, ok := params["name"]; ok {
@@ -57,9 +61,7 @@ func (s *CharacterService) GetAll(params map[string]interface{}) (models.Paginat
 		sliceCharacters = filterByOccupation(sliceCharacters, occupation.(string))
 	}
 
-	return models.PaginationResult{
-		Result: sliceCharacters,
-	}, nil
+	return paginateCharacters(sliceCharacters, page, pageSize), nil
 }
 
 func filterByName(slice []models.Character, name string) []models.Character {
@@ -120,4 +122,36 @@ func filterByOccupation(slice []models.Character, occupation string) []models.Ch
 	}
 
 	return tmp
+}
+
+func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models.PaginationResult {
+	sliceLength := len(slice)
+
+	if pageNum <= 0 {
+		pageNum = 1
+	}
+
+	start := (pageNum - 1) * pageSize
+
+	if start > sliceLength {
+		start = sliceLength
+	}
+
+	end := start + pageSize
+	if end > sliceLength {
+		end = sliceLength
+	}
+
+	pages := sliceLength / pageSize
+	if pages == 0 {
+		pages = 1
+	}
+
+	return &models.PaginationResult{
+		Info: models.Info{
+			Count: sliceLength,
+			Pages: pages,
+		},
+		Result: slice[start:end],
+	}
 }

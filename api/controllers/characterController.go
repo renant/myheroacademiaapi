@@ -56,10 +56,15 @@ func (cc *CharacterController) GetCharacters(c *fiber.Ctx) error {
 		params["occupation"] = occupation
 	}
 
+	page := c.Query("page")
+	if page != "" {
+		params["page"] = page
+	}
+
 	characters, err := cc.CharacterService.GetAll(params)
 
 	if err != nil {
-		c.Status(500).JSON(map[string]string{"message": "Error on get characters"})
+		c.Status(500).JSON(map[string]string{"message": "Error on get characters - " + err.Error()})
 		return nil
 	}
 
