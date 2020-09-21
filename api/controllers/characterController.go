@@ -56,6 +56,11 @@ func (cc *CharacterController) GetCharacters(c *fiber.Ctx) error {
 		params["occupation"] = occupation
 	}
 
+	affiliation := c.Query("affiliation")
+	if affiliation != "" {
+		params["affiliation"] = affiliation
+	}
+
 	page := c.Query("page")
 	if page != "" {
 		params["page"] = page

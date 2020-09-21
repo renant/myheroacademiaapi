@@ -42,6 +42,9 @@ func (s *CharacterService) GetAll(params map[string]interface{}) (*models.Pagina
 		if err != nil {
 			return nil, errors.New("Page must by a integer")
 		}
+		if x <= 0 {
+			return nil, errors.New("Page must by greater than 0")
+		}
 		page = x
 	}
 
@@ -59,6 +62,10 @@ func (s *CharacterService) GetAll(params map[string]interface{}) (*models.Pagina
 
 	if occupation, ok := params["occupation"]; ok {
 		sliceCharacters = filterByOccupation(sliceCharacters, occupation.(string))
+	}
+
+	if affiliation, ok := params["affiliation"]; ok {
+		sliceCharacters = filterByAffiliation(sliceCharacters, affiliation.(string))
 	}
 
 	return paginateCharacters(sliceCharacters, page, pageSize), nil
@@ -124,6 +131,21 @@ func filterByOccupation(slice []models.Character, occupation string) []models.Ch
 	return tmp
 }
 
+func filterByAffiliation(slice []models.Character, affiliation string) []models.Character {
+
+	tmp := slice[:0]
+	for _, v := range slice {
+		if v.Affiliation == nil {
+			continue
+		}
+		if strings.Contains(strings.ToLower(*v.Affiliation), strings.ToLower(affiliation)) {
+			tmp = append(tmp, v)
+		}
+	}
+
+	return tmp
+}
+
 func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models.PaginationResult {
 	sliceLength := len(slice)
 
@@ -145,6 +167,9 @@ func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models
 	pages := sliceLength / pageSize
 	if pages == 0 {
 		pages = 1
+	}
+	if sliceLength%pageSize != 0 {
+		pages++
 	}
 
 	return &models.PaginationResult{
