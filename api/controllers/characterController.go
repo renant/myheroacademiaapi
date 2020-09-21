@@ -1,80 +1,68 @@
 package controllers
 
 import (
-	"context"
-	"fmt"
+	"github.com/renant/my-hero-api/services"
 
-	"github.com/renant/my-hero-api/models"
-
-	"cloud.google.com/go/firestore"
 	"github.com/gofiber/fiber/v2"
-	"github.com/patrickmn/go-cache"
 )
 
 type CharacterController struct {
-	CharactersCollection *firestore.CollectionRef
-	Cache                *cache.Cache
+	CharacterService services.ICharacterService
 }
 
-func NewCharactersController(charactersCollection *firestore.CollectionRef, cache *cache.Cache) *CharacterController {
+func NewCharactersController(characterService services.ICharacterService) *CharacterController {
 	return &CharacterController{
-		CharactersCollection: charactersCollection,
-		Cache:                cache,
+		CharacterService: characterService,
 	}
 }
 
 func (cc *CharacterController) GetCharactersById(c *fiber.Ctx) error {
-	characterID := c.Params("characterId")
+	// characterID := c.Params("characterId")
 
-	ctx := context.Background()
+	// ctx := context.Background()
 
-	docRef := cc.CharactersCollection.Doc(characterID)
-	docsnap, err := docRef.Get(ctx)
-	if err != nil {
-		c.Status(500).JSON(map[string]string{"message": err.Error()})
-		return nil
-	}
-	dataMap := docsnap.Data()
+	// docRef := cc.CharactersCollection.Doc(characterID)
+	// docsnap, err := docRef.Get(ctx)
+	// if err != nil {
+	// 	c.Status(500).JSON(map[string]string{"message": err.Error()})
+	// 	return nil
+	// }
+	// dataMap := docsnap.Data()
 
-	c.Status(200).JSON(dataMap)
+	c.Status(200).JSON(nil)
 	return nil
 }
 
-const cacheListKey = "list-all-characters"
-
 func (cc *CharacterController) GetCharacters(c *fiber.Ctx) error {
-	// queryName := c.Query("name")
+	params := make(map[string]interface{})
 
-	ctx := context.Background()
-
-	cacheList, found := cc.Cache.Get(cacheListKey)
-	// found = false
-	if found {
-		characters := cacheList.([]models.Character)
-		c.Status(200).JSON(characters)
-		return nil
+	nameParam := c.Query("name")
+	if nameParam != "" {
+		params["name"] = nameParam
 	}
 
-	iter := cc.CharactersCollection.Documents(ctx)
+	aliasParam := c.Query("alias")
+	if aliasParam != "" {
+		params["alias"] = aliasParam
+	}
 
-	docsnap, err := iter.GetAll()
+	quirkParam := c.Query("quirk")
+	if quirkParam != "" {
+		params["quirk"] = quirkParam
+	}
+
+	occupation := c.Query("occupation")
+	if occupation != "" {
+		params["occupation"] = occupation
+	}
+
+	characters, err := cc.CharacterService.GetAll(params)
+
 	if err != nil {
-		c.Status(500).JSON(map[string]string{"message": err.Error()})
+		c.Status(500).JSON(map[string]string{"message": "Error on get characters"})
 		return nil
 	}
 
-	sliceCharacters := make([]models.Character, 0)
-
-	for _, value := range docsnap {
-		var character models.Character
-		err := value.DataTo(&character)
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		sliceCharacters = append(sliceCharacters, character)
-	}
-
-	cc.Cache.Set(cacheListKey, sliceCharacters, cache.DefaultExpiration)
-	c.Status(200).JSON(sliceCharacters)
+	c.Status(200).JSON(characters)
 	return nil
 }
