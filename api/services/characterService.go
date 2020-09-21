@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"os"
 	"strconv"
 	"strings"
 
@@ -26,6 +27,9 @@ func NewCharacterService(characterResponseRepository repositories.CharacterRepos
 func (s *CharacterService) GetAll(params map[string]interface{}) (*models.PaginationResult, error) {
 
 	sliceCharacters, err := s.CharacterRepository.GetAll()
+
+	sliceCharacters = setImageBaseUrl(sliceCharacters)
+
 	pageSize := 20
 	page := 1
 
@@ -179,4 +183,17 @@ func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models
 		},
 		Result: slice[start:end],
 	}
+}
+
+func setImageBaseUrl(slice []models.Character) []models.Character {
+	baseURL := os.Getenv("BASE_URL")
+
+	for index, character := range slice {
+		for indexImage, image := range character.Images {
+			character.Images[indexImage] = baseURL + image
+		}
+		slice[index] = character
+	}
+
+	return slice
 }
