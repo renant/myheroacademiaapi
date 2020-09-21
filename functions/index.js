@@ -3,9 +3,14 @@ const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const admin = require('firebase-admin');
 const { PubSub } = require('@google-cloud/pubsub');
+const request = require('request')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 
 admin.initializeApp();
 const db = admin.firestore();
+var storageRef = admin.storage();
 
 const baseUrl = 'https://bokunoheroacademia.fandom.com/wiki';
 const urlBaseCharacters = () => `${baseUrl}/List_of_Characters`;
@@ -41,12 +46,24 @@ exports.getCharacters = functions
 
       const image = $('img').attr('data-src');
       const id = $('a').attr('href');
+      const replaceId = id.replace('/wiki/', '')
 
+      const referenceCode = `${replaceId}.jpg`;
+      const pathTmp = path.join(os.tmpdir(), referenceCode)
+
+      download(image, pathTmp).then(() => {
+        storageRef.bucket('my-hero-academia-api').upload(pathTmp), {
+          destination: referenceCode
+        }
+        return;
+      }).catch(err => {
+        console.error(err);
+      });
 
 
       const character = {
-        id: id.replace('/wiki/', ''),
-        images: [image]
+        id: replaceId,
+        images: [referenceCode]
       };
 
       idsList.push(character.id);
@@ -77,12 +94,12 @@ exports.getCharacters = functions
 const fetchCharactersTopic = 'fetch-characters-topic';
 exports.getCharacter = functions
   .runWith({ memory: '1GB' })
-  // .https.onRequest(async (request, response) => {
+  //.https.onRequest(async (request, response) => {
   .pubsub.topic(fetchCharactersTopic)
   .onPublish(async (msg) => {
     try {
       const { id } = msg.json
-      // const { id } = request.query;
+      //const { id } = request.query;
       const characterRef = await db.collection("characters").doc(id).get();
 
       const character = characterRef.data();
@@ -165,11 +182,26 @@ exports.getCharacter = functions
         })
       });
 
+
       $('aside').each((_, e) => {
-        $(e).find('.image-thumbnail').each((_, image) => {
+        $(e).find('.image-thumbnail').each((index, image) => {
           const findImage = $(image).attr('href')
           if (!findImage.includes('/wiki/')) {
-            charactersImages.push(findImage);
+
+            const referenceCode = `${id}-${index + 1}.jpg`;
+            const pathImg = path.join(os.tmpdir(), referenceCode)
+
+
+            download(findImage, pathImg).then(() => {
+              storageRef.bucket('my-hero-academia-api').upload(pathImg), {
+                destination: referenceCode
+              }
+              return;
+            }).catch(err => {
+              console.error(err);
+            });
+
+            charactersImages.push(referenceCode);
           }
         })
       })
@@ -179,13 +211,38 @@ exports.getCharacter = functions
       }).toArray().reverse().join(''));
 
       const uniqueImages = new Set(charactersImages.concat(character.images))
-      character.images = [...uniqueImages];
+      character.images = [...uniqueImages]
 
       var docRef = db.collection("characters").doc(id);
 
-      docRef.update(character);
-      // response.status(200).json(character);
+      await docRef.update(character);
+      //response.status(200).json(character);
     } catch (error) {
       console.error(error)
     }
   });
+
+
+async function download(url, dest) {
+
+
+  const file = fs.createWriteStream(dest);
+
+  await new Promise((resolve, reject) => {
+    request({
+      uri: url,
+      gzip: true,
+    })
+      .pipe(file)
+      .on('finish', async () => {
+        console.log(`The file is finished downloading.`);
+        resolve();
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  })
+    .catch((error) => {
+      console.log(`Something happened: ${error}`);
+    });
+}
