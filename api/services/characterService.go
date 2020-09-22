@@ -2,10 +2,12 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/renant/my-hero-api/cacheRepositories"
 	"github.com/renant/my-hero-api/models"
 	"github.com/renant/my-hero-api/repositories"
 )
@@ -16,26 +18,41 @@ type ICharacterService interface {
 
 type CharacterService struct {
 	CharacterRepository repositories.CharacterRepository
+	Cache               cacheRepositories.CacheRepository
 }
 
-func NewCharacterService(characterResponseRepository repositories.CharacterRepository) *CharacterService {
+func NewCharacterService(characterResponseRepository repositories.CharacterRepository, cache cacheRepositories.CacheRepository) *CharacterService {
 	return &CharacterService{
 		CharacterRepository: characterResponseRepository,
+		Cache:               cache,
 	}
 }
+
+const cacheKeyGetAll = "cache-key-get-all-characters"
 
 func (s *CharacterService) GetAll(params map[string]interface{}) (*models.PaginationResult, error) {
 
-	sliceCharacters, err := s.CharacterRepository.GetAll()
+	var sliceCharacters []models.Character
 
-	sliceCharacters = setImageBaseUrl(sliceCharacters)
+	cacheValue, found := s.Cache.Get(cacheKeyGetAll)
+	if found {
+		sliceCharacters = cacheValue.([]models.Character)
+	} else {
+		fmt.Println("no no")
+		sliceAllCharacters, err := s.CharacterRepository.GetAll()
+		if err != nil {
+			return nil, err
+		}
+
+		sliceCharacters = setImageBaseURLToSlice(sliceAllCharacters)
+		err = s.Cache.Add(cacheKeyGetAll, sliceCharacters)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	pageSize := 20
 	page := 1
-
-	if err != nil {
-		return nil, err
-	}
 
 	if params == nil {
 		return paginateCharacters(sliceCharacters, page, pageSize), nil
@@ -77,7 +94,7 @@ func (s *CharacterService) GetAll(params map[string]interface{}) (*models.Pagina
 
 func filterByName(slice []models.Character, name string) []models.Character {
 
-	tmp := slice[:0]
+	tmp := make([]models.Character, 0)
 	for _, v := range slice {
 		if v.Name == nil {
 			continue
@@ -92,7 +109,7 @@ func filterByName(slice []models.Character, name string) []models.Character {
 
 func filterByAlias(slice []models.Character, alias string) []models.Character {
 
-	tmp := slice[:0]
+	tmp := make([]models.Character, 0)
 	for _, v := range slice {
 		if v.Alias == nil {
 			continue
@@ -107,7 +124,7 @@ func filterByAlias(slice []models.Character, alias string) []models.Character {
 
 func filterByQuirk(slice []models.Character, quirk string) []models.Character {
 
-	tmp := slice[:0]
+	tmp := make([]models.Character, 0)
 	for _, v := range slice {
 		if v.Quirk == nil {
 			continue
@@ -122,7 +139,7 @@ func filterByQuirk(slice []models.Character, quirk string) []models.Character {
 
 func filterByOccupation(slice []models.Character, occupation string) []models.Character {
 
-	tmp := slice[:0]
+	tmp := make([]models.Character, 0)
 	for _, v := range slice {
 		if v.Occupation == nil {
 			continue
@@ -137,7 +154,7 @@ func filterByOccupation(slice []models.Character, occupation string) []models.Ch
 
 func filterByAffiliation(slice []models.Character, affiliation string) []models.Character {
 
-	tmp := slice[:0]
+	tmp := make([]models.Character, 0)
 	for _, v := range slice {
 		if v.Affiliation == nil {
 			continue
@@ -171,8 +188,7 @@ func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models
 	pages := sliceLength / pageSize
 	if pages == 0 {
 		pages = 1
-	}
-	if sliceLength%pageSize != 0 {
+	} else if sliceLength%pageSize != 0 {
 		pages++
 	}
 
@@ -185,7 +201,7 @@ func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models
 	}
 }
 
-func setImageBaseUrl(slice []models.Character) []models.Character {
+func setImageBaseURLToSlice(slice []models.Character) []models.Character {
 	baseURL := os.Getenv("BASE_URL")
 
 	for index, character := range slice {
