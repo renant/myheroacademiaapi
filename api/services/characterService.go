@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -13,19 +12,47 @@ import (
 )
 
 type ICharacterService interface {
+	GetById(id string) (*models.Character, error)
 	GetAll(params map[string]interface{}) (*models.PaginationResult, error)
 }
 
 type CharacterService struct {
 	CharacterRepository repositories.CharacterRepository
 	Cache               cacheRepositories.CacheRepository
+	BaseURL             string
 }
 
 func NewCharacterService(characterResponseRepository repositories.CharacterRepository, cache cacheRepositories.CacheRepository) *CharacterService {
+	baseURL := os.Getenv("BASE_URL")
 	return &CharacterService{
 		CharacterRepository: characterResponseRepository,
 		Cache:               cache,
+		BaseURL:             baseURL,
 	}
+}
+
+const cacheKeyCharacterById = "cache-key-character-by-id"
+
+func (s *CharacterService) GetById(id string) (*models.Character, error) {
+
+	cachevalue, found := s.Cache.Get(cacheKeyCharacterById + id)
+	if found {
+		return cachevalue.(*models.Character), nil
+	}
+
+	character, err := s.CharacterRepository.GetById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if character == nil {
+		return nil, nil
+	}
+
+	character = setimageBaseURLCharacter(character, s.BaseURL)
+	s.Cache.Add(cacheKeyCharacterById+id, character)
+	return character, nil
 }
 
 const cacheKeyGetAll = "cache-key-get-all-characters"
@@ -38,13 +65,12 @@ func (s *CharacterService) GetAll(params map[string]interface{}) (*models.Pagina
 	if found {
 		sliceCharacters = cacheValue.([]models.Character)
 	} else {
-		fmt.Println("no no")
 		sliceAllCharacters, err := s.CharacterRepository.GetAll()
 		if err != nil {
 			return nil, err
 		}
 
-		sliceCharacters = setImageBaseURLToSlice(sliceAllCharacters)
+		sliceCharacters = setImageBaseURLToSlice(sliceAllCharacters, s.BaseURL)
 		err = s.Cache.Add(cacheKeyGetAll, sliceCharacters)
 		if err != nil {
 			return nil, err
@@ -201,9 +227,7 @@ func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models
 	}
 }
 
-func setImageBaseURLToSlice(slice []models.Character) []models.Character {
-	baseURL := os.Getenv("BASE_URL")
-
+func setImageBaseURLToSlice(slice []models.Character, baseURL string) []models.Character {
 	for index, character := range slice {
 		for indexImage, image := range character.Images {
 			character.Images[indexImage] = baseURL + image
@@ -212,4 +236,11 @@ func setImageBaseURLToSlice(slice []models.Character) []models.Character {
 	}
 
 	return slice
+}
+
+func setimageBaseURLCharacter(character *models.Character, baseURL string) *models.Character {
+	for indexImage, image := range character.Images {
+		character.Images[indexImage] = baseURL + image
+	}
+	return character
 }

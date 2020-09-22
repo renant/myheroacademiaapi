@@ -17,19 +17,21 @@ func NewCharactersController(characterService services.ICharacterService) *Chara
 }
 
 func (cc *CharacterController) GetCharactersById(c *fiber.Ctx) error {
-	// characterID := c.Params("characterId")
+	characterID := c.Params("characterId")
 
-	// ctx := context.Background()
+	character, err := cc.CharacterService.GetById(characterID)
 
-	// docRef := cc.CharactersCollection.Doc(characterID)
-	// docsnap, err := docRef.Get(ctx)
-	// if err != nil {
-	// 	c.Status(500).JSON(map[string]string{"message": err.Error()})
-	// 	return nil
-	// }
-	// dataMap := docsnap.Data()
+	if err == nil && character == nil {
+		c.Status(404).JSON(map[string]string{"message": "character not found"})
+		return nil
+	}
 
-	c.Status(200).JSON(nil)
+	if err != nil {
+		c.Status(500).JSON(map[string]string{"message": err.Error()})
+		return nil
+	}
+
+	c.Status(200).JSON(character)
 	return nil
 }
 

@@ -9,6 +9,7 @@ import (
 
 type CharacterRepository interface {
 	GetAll() ([]models.Character, error)
+	GetById(id string) (*models.Character, error)
 }
 
 type FireStoreCharacterRepository struct {
@@ -40,4 +41,22 @@ func (r *FireStoreCharacterRepository) GetAll() ([]models.Character, error) {
 	}
 
 	return sliceCharacters, nil
+}
+func (r *FireStoreCharacterRepository) GetById(id string) (*models.Character, error) {
+	ctx := context.Background()
+
+	docRef := r.CharactersCollection.Doc(id)
+	docsnap, err := docRef.Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var character models.Character
+	err = docsnap.DataTo(&character)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &character, nil
 }
