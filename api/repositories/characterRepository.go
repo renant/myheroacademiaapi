@@ -48,6 +48,9 @@ func (r *FireStoreCharacterRepository) GetById(id string) (*models.Character, er
 	docRef := r.CharactersCollection.Doc(id)
 	docsnap, err := docRef.Get(ctx)
 	if err != nil {
+		if !docsnap.Exists() {
+			return nil, nil
+		}
 		return nil, err
 	}
 

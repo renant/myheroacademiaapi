@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/renant/my-hero-api/services"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,6 +29,7 @@ func (cc *CharacterController) GetCharactersById(c *fiber.Ctx) error {
 	}
 
 	if err != nil {
+		fmt.Println(character)
 		c.Status(500).JSON(map[string]string{"message": err.Error()})
 		return nil
 	}

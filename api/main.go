@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 	"github.com/patrickmn/go-cache"
 	"github.com/renant/my-hero-api/cacheRepositories"
@@ -22,6 +24,9 @@ func main() {
 
 	app := fiber.New()
 
+	app.Use(recover.New())
+	app.Use(logger.New())
+
 	c := cache.New(5*time.Minute, 10*time.Minute)
 	cacheRepository := cacheRepositories.NewMemoryCacheRepository(c)
 
@@ -33,8 +38,10 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
-	app.Get("/api/character/:characterId", characterController.GetCharactersById)
-	app.Get("/api/character", characterController.GetCharacters)
+	api := app.Group("/api")
+
+	api.Get("/character/:characterId", characterController.GetCharactersById)
+	api.Get("/character", characterController.GetCharacters)
 
 	app.Listen(":3000")
 }
