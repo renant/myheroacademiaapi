@@ -34,8 +34,10 @@ func main() {
 	characterService := services.NewCharacterService(characterRepository, cacheRepository)
 	characterController := controllers.NewCharactersController(characterService)
 
+	app.Static("/", "../frontend/out")
+
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
+		return c.SendFile("../frontend/out/index.html")
 	})
 
 	api := app.Group("/api")
@@ -43,5 +45,5 @@ func main() {
 	api.Get("/character/:characterId", characterController.GetCharactersById)
 	api.Get("/character", characterController.GetCharacters)
 
-	app.Listen(":3000")
+	app.Listen(":4000")
 }
