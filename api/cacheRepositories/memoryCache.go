@@ -1,4 +1,4 @@
-package cacheRepositories
+package cacherepositories
 
 import (
 	"github.com/patrickmn/go-cache"

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/renant/my-hero-api/cacheRepositories"
+	cacherepositories "github.com/renant/my-hero-api/cacheRepositories"
 	"github.com/renant/my-hero-api/models"
 	"github.com/renant/my-hero-api/repositories"
 )
@@ -18,11 +18,11 @@ type ICharacterService interface {
 
 type CharacterService struct {
 	CharacterRepository repositories.CharacterRepository
-	Cache               cacheRepositories.CacheRepository
+	Cache               cacherepositories.CacheRepository
 	BaseURL             string
 }
 
-func NewCharacterService(characterResponseRepository repositories.CharacterRepository, cache cacheRepositories.CacheRepository) *CharacterService {
+func NewCharacterService(characterResponseRepository repositories.CharacterRepository, cache cacherepositories.CacheRepository) *CharacterService {
 	baseURL := os.Getenv("BASE_URL")
 	return &CharacterService{
 		CharacterRepository: characterResponseRepository,

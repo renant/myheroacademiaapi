@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 	"github.com/patrickmn/go-cache"
-	"github.com/renant/my-hero-api/cacheRepositories"
+	cacherepositories "github.com/renant/my-hero-api/cacheRepositories"
 	"github.com/renant/my-hero-api/controllers"
 	"github.com/renant/my-hero-api/database"
 	"github.com/renant/my-hero-api/repositories"
@@ -28,7 +28,7 @@ func main() {
 	app.Use(logger.New())
 
 	c := cache.New(5*time.Minute, 10*time.Minute)
-	cacheRepository := cacheRepositories.NewMemoryCacheRepository(c)
+	cacheRepository := cacherepositories.NewMemoryCacheRepository(c)
 
 	characterRepository := repositories.NewFireStoreCharacterRepository(database.GetCharactersCollection())
 	characterService := services.NewCharacterService(characterRepository, cacheRepository)
