@@ -80,10 +80,6 @@ func (s *CharacterService) GetAll(params map[string]interface{}) (*models.Pagina
 	pageSize := 20
 	page := 1
 
-	if params == nil {
-		return paginateCharacters(sliceCharacters, page, pageSize), nil
-	}
-
 	if pageParam, ok := params["page"]; ok {
 		x, err := strconv.Atoi(pageParam.(string))
 		if err != nil {
@@ -220,8 +216,9 @@ func paginateCharacters(slice []models.Character, pageNum, pageSize int) *models
 
 	return &models.PaginationResult{
 		Info: models.Info{
-			Count: sliceLength,
-			Pages: pages,
+			CurrentPage: pageNum,
+			Count:       sliceLength,
+			Pages:       pages,
 		},
 		Result: slice[start:end],
 	}

@@ -6,6 +6,7 @@ type PaginationResult struct {
 }
 
 type Info struct {
-	Count int `json:"count"`
-	Pages int `json:"pages"`
+	CurrentPage int `json:"currentPage"`
+	Count       int `json:"count"`
+	Pages       int `json:"pages"`
 }
