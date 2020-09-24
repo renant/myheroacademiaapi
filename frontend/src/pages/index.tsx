@@ -3,6 +3,8 @@ import Head from 'next/head'
 import process from 'process'
 import React from 'react'
 import useSWR from 'swr'
+import CharacterCard from '../components/CharacterCard'
+import { ImageContainer, ListContainer } from '../styles/home/style'
 
 const returnCharactersResult = async baseURL => {
   const queries = [
@@ -52,12 +54,28 @@ const Home: React.FC<Props> = (props: Props) => {
       </Head>
 
       <main>
-        <h1>Welcome to My Hero Academia API</h1>
+        <ImageContainer>
+          <img src="my-hero-api.png"></img>
+        </ImageContainer>
       </main>
 
-      {data.result.map(character => (
-        <p key={character.id}>{character.name}</p>
-      ))}
+      <ListContainer>
+        <div>
+          {data.result.map(character => (
+            <CharacterCard
+              key={character.id}
+              id={character.id}
+              name={character.name}
+              alias={character.alias}
+              image={character.images[character.images.length - 1]}
+              affiliation={character.affiliation}
+              occupation={character.occupation}
+              quirk={character.quirk}
+              baseURL={props.baseURL}
+            />
+          ))}
+        </div>
+      </ListContainer>
     </div>
   )
 }
