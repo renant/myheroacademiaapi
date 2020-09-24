@@ -21,8 +21,8 @@ export const ListContainer = styled.div`
   justify-content: center;
   width: 100%;
 
-  div {
-    max-width: 1300px;
+  div:first-child {
+    max-width: 1425px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;

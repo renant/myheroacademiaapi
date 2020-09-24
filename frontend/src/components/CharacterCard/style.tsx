@@ -13,10 +13,6 @@ export const Container = styled.div`
     justify-content: center;
   }
 `
-export const HeaderContainer = styled.div`
-  display: flex;
-  flex-direction
-`
 
 export const ImageContainer = styled.div`
   border-radius: 10px 0 0 10px;
@@ -36,8 +32,8 @@ export const ImageContainer = styled.div`
 `
 
 export const DisplayContent = styled.div`
-  max-width: 250px;
-  width: 250px;
+  max-width: 300px;
+  width: 300px;
   height: 135px;
   display: flex;
   flex-direction: column;
