@@ -9,10 +9,13 @@
     "start": "next start"
   },
   "dependencies": {
+    "highlight.js": "^10.2.0",
+    "markdown-to-jsx": "^7.0.0",
     "next": "9.5.3",
     "polished": "^3.6.7",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-highlight": "^0.12.0",
     "react-icons": "^3.11.0",
     "styled-components": "^5.2.0",
     "swr": "^0.3.4"

@@ -119,6 +119,10 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap"
             rel="stylesheet"
           ></link>
+          <link
+            rel="stylesheet"
+            href="https://highlightjs.org/static/demo/styles/railscasts.css"
+          />
         </Head>
         <body>
           <Main />

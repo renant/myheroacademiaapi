@@ -4,7 +4,7 @@ import process from 'process'
 import React from 'react'
 import useSWR from 'swr'
 import CharacterCard from '../components/CharacterCard'
-import { ImageContainer, ListContainer } from '../styles/home/style'
+import { ImageContainer, ListContainer } from '../styles/Home/style'
 
 const returnCharactersResult = async baseURL => {
   const queries = [

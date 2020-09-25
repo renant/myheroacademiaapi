@@ -42,14 +42,14 @@ export const Link = styled.a<LinkProps>`
   color: ${props => (props.active ? '#A2A2A2' : props.theme.colors.background)};
   text-decoration: none;
   &:hover {
-    color: ${props => shade(0.5, '#fff')};
+    color: ${props => shade(0.5, '#A2A2A2')};
   }
   h2 {
     color: ${props =>
     props.active ? '#A2A2A2' : props.theme.colors.background};
     font-weight: 300;
     &:hover {
-      color: ${props => shade(0.5, '#fff')};
+      color: ${props => shade(0.5, '#A2A2A2')};
     }
   }
 `

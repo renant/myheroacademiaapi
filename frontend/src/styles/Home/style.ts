@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+// import '../../node_modules/highlight.js/styles/nord.css'
 
 export const ImageContainer = styled.div`
   background: #ffde59;
