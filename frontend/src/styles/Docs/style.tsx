@@ -78,6 +78,20 @@ export const MainContainer = styled.div`
     margin: 10px 0px;
     display: flex;
     align-items: center;
+    border-radius: 35px;
+    height: 60px;
+    p {
+      margin-left: 10px;
+    }
+  }
+
+  code {
+    border-radius: 35px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    ::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   ul {
