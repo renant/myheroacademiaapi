@@ -9,15 +9,15 @@ import theme from '../styles/theme'
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter()
-  console.log(router.route === '/docs')
+  const isDoc = router.route === '/docs'
   return (
     <ThemeProvider theme={theme}>
-      <Nav>
+      <Nav isDoc={isDoc}>
         <a href="/">
           <img src="ms-icon-70x70.png" />
         </a>
         <LinksContainer>
-          <Link href="/docs" active={router.route === '/docs'}>
+          <Link href="/docs" active={isDoc}>
             <h2>DOCS</h2>
           </Link>
           <Link href="https://github.com/renant">

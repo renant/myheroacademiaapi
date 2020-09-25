@@ -1,7 +1,13 @@
 import { shade } from 'polished'
 import styled from 'styled-components'
 
-export const Nav = styled.nav`
+interface NavProps {
+  isDoc: boolean
+}
+
+export const Nav = styled.nav<NavProps>`
+  z-index: 9;
+  position: ${props => (props.isDoc ? 'fixed' : 'static')};
   background: ${props => props.theme.colors.primary};
   height: 60px;
   width: 100%;

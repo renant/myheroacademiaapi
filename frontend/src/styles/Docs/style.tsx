@@ -2,27 +2,51 @@ import { shade } from 'polished'
 import styled from 'styled-components'
 
 export const Container = styled.div`
+  display: block;
   border-top: 1px solid #ccc;
   background-color: ${props => props.theme.colors.text};
   color: ${props => props.theme.colors.background};
   display: flex;
   flex-direction: row;
-  width: 100%;
 `
 
 export const SideBar = styled.div`
   display: flex;
+  top: 0;
   flex-direction: column;
   width: 300px;
+  height: 100%;
+  position: fixed;
   padding-left: 20px;
   padding-top: 1px;
   border-right: 1px solid #ccc;
+
+  ul:first-child {
+    margin-top: 80px;
+  }
+
+  @media only screen and (max-width: 1030px) {
+    display: none;
+  }
 `
 export const MainContainer = styled.div`
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
+  margin-left: 300px;
+
+  .anchor {
+    display: block;
+    height: 60px;
+    margin-top: -30px;
+    visibility: hidden;
+  }
+
+  @media only screen and (max-width: 1030px) {
+    margin-left: 0px;
+  }
 
   h2,
   h3,
@@ -31,7 +55,8 @@ export const MainContainer = styled.div`
   }
 
   p {
-    margin: 10px 0;
+    margin: 30px 0;
+    line-height: 25px;
   }
 
   a {
@@ -53,6 +78,14 @@ export const MainContainer = styled.div`
     margin: 10px 0px;
     display: flex;
     align-items: center;
+  }
+
+  ul {
+    margin-left: 45px;
+    margin-bottom: 20px;
+    li {
+      padding: 12px 0;
+    }
   }
 
   table {
@@ -79,4 +112,41 @@ export const MainContainer = styled.div`
 export const DocumentContainer = styled.div`
   margin: 50px 0 50px 0;
   max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+
+  @media only screen and (max-width: 1030px) {
+    max-width: 100%;
+
+    /* margin-left: 20px; */
+  }
 `
+
+export const Section = styled.li`
+  margin-left: 10px;
+  margin-bottom: 30px;
+  list-style-type: none;
+  font-weight: 500;
+  a {
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: #232323;
+  }
+
+  ul {
+    margin-top: 10px;
+    list-style-type: none;
+  }
+  ul > li {
+    font-weight: 300;
+    margin-left: 1px;
+    padding: 5px;
+    a {
+      text-decoration: none;
+      color: #232323;
+    }
+  }
+`
+
+export const Item = styled.li``

@@ -12,4 +12,8 @@ export default createGlobalStyle`
     color: ${props => props.theme.colors.text};
     font: 400 16px 'Fira Code', monospace;
   }
+
+  #__next {
+    min-width: 100vh;
+  }
 `
