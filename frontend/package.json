@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "env-cmd -f .env.local next dev",
-    "build": "env-cmd -f .env next build && next export",
-    "prod": "env-cmd -f .env.production build && next export",
+    "build": "env-cmd -f .env next build && next export && rm -r ../api/out && cp -rf -avr ./out ../api/out",
+    "prod": "env-cmd -f .env.production next build && next export && rm -r ../api/out && cp -rf -avr ./out ../api/out",
     "start": "next start"
   },
   "dependencies": {

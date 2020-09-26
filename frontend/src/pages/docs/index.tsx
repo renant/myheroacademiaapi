@@ -1,5 +1,6 @@
 import Markdown from 'markdown-to-jsx'
 import { GetStaticProps } from 'next'
+import process from 'process'
 import React from 'react'
 import Highlight from 'react-highlight'
 import {
@@ -30,12 +31,12 @@ export const getStaticProps: GetStaticProps = async () => {
   const introduction = `
   <span class="anchor" id="introduction-id"></span>
   ## Introduction
-  This documentantion will help you get familiar with resource of the **My Hero Academia API** and show you how make requests to get characters
+  This documentation will help you to get familiar with the resources of **My Hero Academia API** and show you how make requests to get characters
 
   <span class="anchor" id="rest-id"></span>
   ### REST
   #### **Base url:** ${baseURL}/api
-  The all requests are **GET** and resposes will return data in **json** format.
+  All the requests are **GET** and resposes will return data in **json** format.
 
   <span class="anchor" id="info-pagination-id"></span>
   ### Info and Pagination
