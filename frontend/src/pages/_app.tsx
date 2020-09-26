@@ -20,7 +20,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
           <Link href="/docs" active={isDoc}>
             <h2>DOCS</h2>
           </Link>
-          <Link href="https://github.com/renant">
+          <Link href="https://github.com/renant/myheroacademiaapi">
             <AiFillGithub size={24} />
           </Link>
         </LinksContainer>
