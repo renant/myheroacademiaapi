@@ -18,6 +18,6 @@ You can get started follow the [documentation.](https://myheroacademiaapi.com/do
   <img src="./assets/diagram.png">
 </p>
 
-**Functions:** Firebase functions to get data from fandom and store in Cloud Storage and Cloud Firestore.
-**Storage:** Firestore to store docs and Cloud Storage to store images downloaded.
+**Functions:** Firebase functions to get data from fandom and store in Cloud Storage and Cloud Firestore.  
+**Storage:** Firestore to store docs and Cloud Storage to store images downloaded.  
 **Cloud Run:** To run container with Golang, running [GoFiber](https://github.com/gofiber/fiber) with static files provides by [Next.JS](https://github.com/vercel/next.js/)
