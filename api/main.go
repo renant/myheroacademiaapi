@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -42,10 +44,10 @@ func main() {
 	characterService := services.NewCharacterService(characterRepository, cacheRepository)
 	characterController := controllers.NewCharactersController(characterService)
 
-	app.Static("/", "../frontend/out")
+	app.Static("/", "./out")
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("../frontend/out/index.html")
+		return c.SendFile("./out/index.html")
 	})
 
 	api := app.Group("/api")
@@ -53,5 +55,10 @@ func main() {
 	api.Get("/character/:characterId", characterController.GetCharactersById)
 	api.Get("/character", characterController.GetCharacters)
 
-	app.Listen(":4000")
+	port := "4000"
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		port = envPort
+	}
+
+	app.Listen(fmt.Sprintf(":%v", port))
 }
