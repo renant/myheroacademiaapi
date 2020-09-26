@@ -20,32 +20,22 @@ const returnCharactersResult = async baseURL => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const baseURL = process.env.BASE_URL
-  const result = await returnCharactersResult(baseURL)
+
   return {
     props: {
-      baseURL,
-      result
+      baseURL
     }
   }
 }
 
 interface Props {
-  result: any
   baseURL: string
 }
 
 const Home: React.FC<Props> = (props: Props) => {
-  const { data } = useSWR(
-    `${props.baseURL}/api/character`,
-    async () => returnCharactersResult(props.baseURL),
-    {
-      initialData: props.result
-    }
+  const { data } = useSWR(`${props.baseURL}/api/character`, async () =>
+    returnCharactersResult(props.baseURL)
   )
-
-  if (!data) {
-    return <h1>Loading...</h1>
-  }
 
   return (
     <div>
@@ -59,23 +49,27 @@ const Home: React.FC<Props> = (props: Props) => {
         </ImageContainer>
       </main>
 
-      <ListContainer>
-        <div>
-          {data.result.map(character => (
-            <CharacterCard
-              key={character.id}
-              id={character.id}
-              name={character.name}
-              alias={character.alias}
-              image={character.images[character.images.length - 1]}
-              affiliation={character.affiliation}
-              occupation={character.occupation}
-              quirk={character.quirk}
-              baseURL={props.baseURL}
-            />
-          ))}
-        </div>
-      </ListContainer>
+      {!data ? (
+        <h1>Loading...</h1>
+      ) : (
+          <ListContainer>
+            <div>
+              {data.result.map(character => (
+                <CharacterCard
+                  key={character.id}
+                  id={character.id}
+                  name={character.name}
+                  alias={character.alias}
+                  image={character.images[character.images.length - 1]}
+                  affiliation={character.affiliation}
+                  occupation={character.occupation}
+                  quirk={character.quirk}
+                  baseURL={props.baseURL}
+                />
+              ))}
+            </div>
+          </ListContainer>
+        )}
     </div>
   )
 }
