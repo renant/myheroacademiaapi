@@ -15,10 +15,11 @@ jobs:
     steps:
       
       #Configure .env to front-end
-      - uses: SpicyPizza/create-envfile@v1
-        with:
-          envkey_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
-          file_name: .env 
+
+      - run: |
+          touch .env
+          echo API_KEY=${{ secrets.FRONTEND_BASE_URL }} >> .env
+          cat .env
        
        
       #Configure GCP    
