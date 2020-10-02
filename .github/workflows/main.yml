@@ -18,6 +18,7 @@ jobs:
       - uses: SpicyPizza/create-envfile@v1
         with:
           BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+          file_name: .env 
        
        
       #Configure GCP    
