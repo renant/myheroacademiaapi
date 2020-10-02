@@ -1,7 +1,7 @@
 FROM node:current as frontend
 WORKDIR /frontend
 COPY ./frontend .
-COPY .env .
+COPY .env .env.production
 
 RUN npm run production
 
