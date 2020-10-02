@@ -6,6 +6,7 @@
     "dev": "env-cmd -f .env.local next dev",
     "build": "env-cmd -f .env next build && next export && rm -r ../api/out && cp -rf -avr ./out ../api/out",
     "prod": "env-cmd -f .env.production next build && next export && rm -r ../api/out && cp -rf -avr ./out ../api/out",
+    "production": "env-cmd -f .env.production next build && next export",
     "start": "next start"
   },
   "dependencies": {
