@@ -13,6 +13,8 @@ jobs:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     steps:
+       
+      #Configure GCP    
       - uses: actions/checkout@v2
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -21,3 +23,19 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
       - run: gcloud info
+      
+      #Configure Docker
+      - run: |
+          # Set up docker to authenticate
+          # via gcloud command-line tool.
+          gcloud auth configure-docker
+      
+      
+      # Build the Docker image
+      - name: Build
+        run: |        
+            docker build ./api --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCLOUD_APP_NAME }}
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        run: |
+            docker push gcr.io//${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
