@@ -13,6 +13,12 @@ jobs:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     steps:
+      
+      #Configure .env to front-end
+      - uses: SpicyPizza/create-envfile@v1
+        with:
+          BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+       
        
       #Configure GCP    
       - uses: actions/checkout@v2
