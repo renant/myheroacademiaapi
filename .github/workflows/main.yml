@@ -39,3 +39,9 @@ jobs:
       - name: Publish
         run: |
             docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCLOUD_APP_NAME }}
+            
+      # Deploy the Docker image to the GKE cluster
+      - name: Deploy
+        run: |
+           gcloud components install beta && gcloud beta run deploy ${{ secrets.GCLOUD_APP_NAME }} --quiet --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCLOUD_APP_NAME }} --project ${{ secrets.GCP_PROJECT_ID }} --region us-central1 --platform managed  --set-env-vars GCP_PROJECT=${{ secrets.GCP_PROJECT_ID }} BASE_URL=${{ secrets.GCP_STORAGE_BASE_URL }}
+ 
