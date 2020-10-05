@@ -1,7 +1,10 @@
 FROM node:current as frontend
+ARG FRONTEND_BASE_URL
 WORKDIR /frontend
 COPY ./frontend .
-COPY .env .env.production
+RUN touch .env.production
+RUN echo BASE_URL=$FRONTEND_BASE_URL >> .env.production
+RUN cat .env.production
 
 RUN npm run production
 
