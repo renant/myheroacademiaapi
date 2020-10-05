@@ -6,6 +6,7 @@ RUN touch .env.production
 RUN echo BASE_URL=$FRONTEND_BASE_URL >> .env.production
 RUN cat .env.production
 
+RUN npm install -g env-cmd
 RUN npm run production
 
 FROM golang:1.12 as builder
