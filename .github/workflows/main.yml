@@ -13,6 +13,14 @@ jobs:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     steps:
+      
+      #Configure .env to front-end
+
+      - run: |
+          touch .env
+          echo API_KEY=${{ secrets.FRONTEND_BASE_URL }} >> .env
+          cat .env
+       
        
       #Configure GCP    
       - uses: actions/checkout@v2
@@ -34,7 +42,7 @@ jobs:
       # Build the Docker image
       - name: Build
         run: |        
-            docker build ./api --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCLOUD_APP_NAME }}
+            docker build . --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCLOUD_APP_NAME }}
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |
